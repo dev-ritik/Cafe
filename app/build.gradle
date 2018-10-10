@@ -42,8 +42,9 @@ dependencies {
     implementation 'com.facebook.android:facebook-android-sdk:[4,5)'
     implementation 'com.facebook.android:account-kit-sdk:4.+'
 
-    compile 'com.squareup.picasso:picasso:2.71828'
-    compile 'com.makeramen:roundedimageview:2.3.0'
+    implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'com.makeramen:roundedimageview:2.3.0'
+    implementation 'com.android.support:recyclerview-v7:27.1.1'
 
     //QR
     //reader

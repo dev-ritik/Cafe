@@ -4,8 +4,8 @@
     package="io.github.dev_ritik.cafe">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -17,8 +17,7 @@
         <activity
             android:name=".LoginActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/FullscreenTheme">
-        </activity>
+            android:theme="@style/FullscreenTheme"></activity>
 
         <meta-data
             android:name="com.facebook.accountkit.ApplicationName"
@@ -79,6 +78,8 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>    </application>
+        </activity>
+        <activity android:name=".ClientActivity"></activity>
+    </application>
 
 </manifest>

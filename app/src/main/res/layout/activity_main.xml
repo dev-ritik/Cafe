@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -14,6 +14,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="52dp"
+        android:layout_alignParentTop="true"
         android:background="?attr/colorPrimary"
         android:paddingLeft="16dp"
         app:titleTextColor="@android:color/white">
@@ -45,6 +46,7 @@
         android:id="@+id/scanner_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar"
         app:autoFocusButtonColor="@android:color/white"
         app:autoFocusButtonVisible="true"
         app:flashButtonColor="@android:color/white"
@@ -56,5 +58,42 @@
         app:frameSize="0.75"
         app:frameThickness="2dp"
         app:maskColor="#77000000" />
+    <Button
+        android:layout_above="@+id/pallet"
+        android:layout_alignParentEnd="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="test"
+        android:onClick="test"/>
 
-</LinearLayout>
+    <LinearLayout
+        android:id="@+id/pallet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <Button
+            android:id="@+id/checkIn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="checkIn"
+            android:text="checkin" />
+
+        <Button
+            android:id="@+id/checkOut"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="checkOut"
+            android:text="checkOut" />
+
+        <Button
+            android:id="@+id/clients"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="clients"
+            android:text="clients" />
+    </LinearLayout>
+</RelativeLayout>

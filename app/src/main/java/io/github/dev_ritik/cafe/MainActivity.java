@@ -30,6 +30,8 @@ import com.makeramen.roundedimageview.RoundedTransformationBuilder;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
+import java.util.Arrays;
+
 import io.realm.Realm;
 import io.realm.RealmResults;
 
@@ -41,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     String userId;
     String userName;
     Realm realm;
+    String[] data;
     private CodeScanner mCodeScanner;
 
     @Override
@@ -57,14 +60,13 @@ public class MainActivity extends AppCompatActivity {
         realm = Realm.getDefaultInstance();
 
 
-        RealmResults<Client> clients=realm.where(Client.class).findAll();
-        for (Client client:clients)
-        {
-            Toast.makeText(this,client.getId(), Toast.LENGTH_SHORT).show();
+        RealmResults<Client> clients = realm.where(Client.class).findAll();
+        for (Client client : clients) {
+            Toast.makeText(this, client.getId(), Toast.LENGTH_SHORT).show();
             Toast.makeText(this, client.getId(), Toast.LENGTH_SHORT).show();
         }
-        
-        
+
+
         accountButton = (ImageView) findViewById(R.id.account_button);
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
@@ -145,8 +147,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             Toast.makeText(MainActivity.this, result.getText(), Toast.LENGTH_SHORT).show();
-                            String[] data = result.getText().split(" ");
-                            realmAddition(data[0], data[1], data[2]);
+                            data = result.getText().split(" ");
                         }
                     });
                 }
@@ -176,7 +177,6 @@ public class MainActivity extends AppCompatActivity {
         }, new Realm.Transaction.OnSuccess() {
             @Override
             public void onSuccess() {
-
 //                yourPlacesArrayList.add(client);
 
                 // Transaction was a success.
@@ -242,6 +242,27 @@ public class MainActivity extends AppCompatActivity {
     public String calculateTime() {
         return android.text.format.DateFormat.format("MMM dd, yyyy hh:mm:ss aaa", new java.util.Date()).toString();
 
+    }
+
+    public void checkIn(View view) {
+        if (data != null && data[0] != null) {
+            Log.i("point m247", Arrays.toString(data));
+            realmAddition(data[0], data[1], data[2]);
+        } else
+            Toast.makeText(this, "no data found", Toast.LENGTH_SHORT).show();
+    }
+
+    public void checkOut(View view) {
+        if (data != null && data[0] != null)
+            realmAddition(data[0], data[1], data[2]);
+        Toast.makeText(this, "no data found", Toast.LENGTH_SHORT).show();
+    }
+
+    public void clients(View view) {
+        startActivity(new Intent(this, ClientActivity.class));
+    }
+
+    public void test(View view) {
     }
 }
 
