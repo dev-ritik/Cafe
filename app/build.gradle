@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'realm-android'
 
 android {
     compileSdkVersion 27
@@ -24,6 +25,10 @@ android {
     }
 }
 
+realm {
+    syncEnabled = true;
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:27.1.1'
@@ -43,7 +48,4 @@ dependencies {
     //QR
     //reader
     implementation 'com.budiyev.android:code-scanner:2.0.1'
-    //Generator
-    compile 'androidmads.library.qrgenearator:QRGenearator:1.0.3'
-
 }

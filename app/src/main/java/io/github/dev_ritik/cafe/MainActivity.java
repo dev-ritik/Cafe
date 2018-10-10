@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -12,25 +13,34 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.budiyev.android.codescanner.CodeScanner;
+import com.budiyev.android.codescanner.CodeScannerView;
+import com.budiyev.android.codescanner.DecodeCallback;
+import com.facebook.AccessToken;
 import com.facebook.Profile;
 import com.facebook.ProfileTracker;
-import com.google.zxing.WriterException;
+import com.facebook.accountkit.Account;
+import com.facebook.accountkit.AccountKit;
+import com.facebook.accountkit.AccountKitCallback;
+import com.facebook.accountkit.AccountKitError;
+import com.google.zxing.Result;
 import com.makeramen.roundedimageview.RoundedTransformationBuilder;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
-import androidmads.library.qrgenearator.QRGContents;
-import androidmads.library.qrgenearator.QRGEncoder;
-
-//import com.budiyev.android.codescanner.CodeScanner;
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 public class MainActivity extends AppCompatActivity {
 
     public static int ACCOUNT_ACTIVITY_REQUEST_CODE = 1;
     ProfileTracker profileTracker;
     ImageView accountButton;
+    String userId;
+    String userName;
+    Realm realm;
     private CodeScanner mCodeScanner;
 
     @Override
@@ -43,6 +53,18 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
+        Realm.init(getApplicationContext());
+        realm = Realm.getDefaultInstance();
+
+
+        RealmResults<Client> clients=realm.where(Client.class).findAll();
+        for (Client client:clients)
+        {
+            Toast.makeText(this,client.getId(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, client.getId(), Toast.LENGTH_SHORT).show();
+        }
+        
+        
         accountButton = (ImageView) findViewById(R.id.account_button);
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
@@ -68,49 +90,107 @@ public class MainActivity extends AppCompatActivity {
             };
 
             // show profile pic on account button
-            Profile currentProfile = Profile.getCurrentProfile();
-            if (currentProfile != null) {
-                displayProfilePic(currentProfile);
+
+            if (AccessToken.getCurrentAccessToken() != null) {
+                // If there is an access token then Login Button was used
+                // Check if the profile has already been fetched
+                Profile currentProfile = Profile.getCurrentProfile();
+                if (currentProfile != null) {
+                    displayProfilePic(currentProfile);
+                    this.userId = currentProfile.getId();
+                    this.userName = currentProfile.getFirstName() + " " + currentProfile.getMiddleName() + " " + currentProfile.getLastName();
+                } else {
+                    // Fetch the profile, which will trigger the onCurrentProfileChanged receiver
+                    Profile.fetchProfileForCurrentAccessToken();
+                }
             } else {
-                // Fetch the profile, which will trigger the onCurrentProfileChanged receiver
-                Profile.fetchProfileForCurrentAccessToken();
-            }
+                // Otherwise, get Account Kit login information
+                AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
+                    @Override
+                    public void onSuccess(final Account account) {
+                        // get Account Kit ID
+                        userId = account.getId();
 
-
-//            CodeScannerView scannerView = findViewById(R.id.scanner_view);
-//            mCodeScanner = new CodeScanner(this, scannerView);
-//            mCodeScanner.setDecodeCallback(new DecodeCallback() {
-//                @Override
-//                public void
-//                onDecoded(@NonNull final Result result) {
-//                    MainActivity.this.runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            Toast.makeText(MainActivity.this, result.getText(), Toast.LENGTH_SHORT).show();
+//                        PhoneNumber phoneNumber = account.getPhoneNumber();
+//                        if (account.getPhoneNumber() != null) {
+//                            // if the phone number is available, display it
+//                            String formattedPhoneNumber = formatPhoneNumber(phoneNumber.toString());
+//                            info.setText(formattedPhoneNumber);
+//                            infoLabel.setText(R.string.phone_label);
+//                        } else {
+//                            // if the email address is available, display it
+//                            String emailString = account.getEmail();
+//                            info.setText(emailString);
+//                            infoLabel.setText(R.string.email_label);
 //                        }
-//                    });
-//                }
-//            });
-//            scannerView.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    mCodeScanner.startPreview();
-//                }
-//            });
-//        }
 
+                    }
 
-            ImageView qrImage = findViewById(R.id.qrImage);
-            QRGEncoder qrgEncoder = new QRGEncoder("ritik", null, QRGContents.Type.TEXT, 450);
-            try {
-                // Getting QR-Code as Bitmap
-                // Setting Bitmap to ImageView
-                qrImage.setImageBitmap(qrgEncoder.encodeAsBitmap());
-            } catch (WriterException e) {
-                Log.i("point 115", e.toString());
+                    @Override
+                    public void onError(final AccountKitError error) {
+                        String toastMessage = error.getErrorType().getMessage();
+                        Log.i("point m123", toastMessage);
+                    }
+                });
             }
+
+
+            CodeScannerView scannerView = findViewById(R.id.scanner_view);
+            mCodeScanner = new CodeScanner(this, scannerView);
+            mCodeScanner.setDecodeCallback(new DecodeCallback() {
+                @Override
+                public void
+                onDecoded(@NonNull final Result result) {
+                    MainActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(MainActivity.this, result.getText(), Toast.LENGTH_SHORT).show();
+                            String[] data = result.getText().split(" ");
+                            realmAddition(data[0], data[1], data[2]);
+                        }
+                    });
+                }
+            });
+            scannerView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mCodeScanner.startPreview();
+                }
+            });
+
         }
     }
+
+
+    private void realmAddition(final String userId, final String userName, final String checkInTime) {
+        realm.executeTransactionAsync(new Realm.Transaction() {
+            @Override
+            public void execute(Realm bgRealm) {
+                Client client = bgRealm.createObject(Client.class);
+                client.setId(userId);
+                client.setName(userName);
+                client.setCheckInTime(checkInTime);
+
+                //add new client to database
+            }
+        }, new Realm.Transaction.OnSuccess() {
+            @Override
+            public void onSuccess() {
+
+//                yourPlacesArrayList.add(client);
+
+                // Transaction was a success.
+                Toast.makeText(MainActivity.this, "Successfully Stored", Toast.LENGTH_SHORT).show();
+            }
+        }, new Realm.Transaction.OnError() {
+            @Override
+            public void onError(Throwable error) {
+                // Transaction failed and was automatically canceled.
+                Toast.makeText(MainActivity.this, error.toString(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
 
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode,
@@ -136,12 +216,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-//        mCodeScanner.startPreview();
+        mCodeScanner.startPreview();
     }
 
     @Override
     protected void onPause() {
-//        mCodeScanner.releaseResources();
+        mCodeScanner.releaseResources();
         super.onPause();
     }
 
@@ -159,6 +239,9 @@ public class MainActivity extends AppCompatActivity {
                 .into(accountButton);
     }
 
+    public String calculateTime() {
+        return android.text.format.DateFormat.format("MMM dd, yyyy hh:mm:ss aaa", new java.util.Date()).toString();
 
+    }
 }
 
