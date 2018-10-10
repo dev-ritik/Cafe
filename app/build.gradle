@@ -11,11 +11,6 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
-
-    packagingOptions {
-        exclude 'META-INF/proguard/androidx-annotations.pro'
-    }
-
     buildTypes {
         release {
             minifyEnabled false
@@ -41,8 +36,6 @@ dependencies {
     compile 'com.makeramen:roundedimageview:2.3.0'
 
     //QR
-    //reader
-    implementation 'com.budiyev.android:code-scanner:2.0.1'
     //Generator
     compile 'androidmads.library.qrgenearator:QRGenearator:1.0.3'
 
