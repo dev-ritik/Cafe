@@ -80,4 +80,16 @@ public class RealmController {
                 .findAll();
 
     }
+
+    public void deleteClient(final String id) {
+
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                RealmResults<Client> result = realm.where(Client.class).equalTo("id", id).findAll();
+                result.deleteAllFromRealm();
+            }
+
+        });
+    }
 }

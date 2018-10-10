@@ -3,35 +3,61 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/userId"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="87633443532131"
-        android:padding="10dp"
-        android:textColor="@android:color/black" />
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/userName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="Ritik"
-        android:padding="10dp"
-        android:textColor="@android:color/black" />
+        <TextView
+            android:id="@+id/userName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Ritik"
+            android:padding="8dp"
+            android:textColor="@android:color/black" />
 
-    <TextView
-        android:id="@+id/checkInTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="10:15:20"
-        android:padding="10dp"
-        android:textColor="@android:color/black" />
+        <TextView
+            android:id="@+id/userId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="87633443532131"
+            android:padding="8dp"
+            android:textColor="@android:color/black" />
 
-    <TextView
-        android:id="@+id/checkOutTime"
+    </LinearLayout>
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" />
+
+    <LinearLayout
+
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="10:15:20"
-        android:padding="10dp"
-        android:textColor="@android:color/black" />
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/checkInTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="check In Time"
+            android:padding="8dp"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/checkOutTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="check out Time"
+            android:padding="8dp"
+            android:textColor="@android:color/black" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="del" />
 </LinearLayout>

@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             Toast.makeText(MainActivity.this, result.getText(), Toast.LENGTH_SHORT).show();
-                            data = result.getText().split(" ");
+                            data = result.getText().split("@");
                         }
                     });
                 }
@@ -253,16 +253,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void checkOut(View view) {
-        if (data != null && data[0] != null)
-            realmAddition(data[0], data[1], data[2]);
-        Toast.makeText(this, "no data found", Toast.LENGTH_SHORT).show();
+        if (data != null && data[0] != null) {
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    Client client = realm.where(Client.class).equalTo("id", data[0]).findFirst();
+                    Log.i("point m261", client + "" + data[0]);
+                    if (client == null) {
+                        Toast.makeText(MainActivity.this, "new user!!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        client.setCheckOutTime(data[2]);
+                    }
+                }
+            });
+        }
     }
 
     public void clients(View view) {
         startActivity(new Intent(this, ClientActivity.class));
     }
 
-    public void test(View view) {
-    }
 }
 

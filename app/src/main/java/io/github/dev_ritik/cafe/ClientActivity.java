@@ -19,6 +19,10 @@ public class ClientActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ClientsAdapter mAdapter;
 
+    private ClientsAdapter clientsAdapter;
+    RealmResults<Client> results;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,14 +31,23 @@ public class ClientActivity extends AppCompatActivity {
         realm = Realm.getDefaultInstance();
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        mAdapter = new ClientsAdapter(clientList);
+//        mAdapter = new ClientsAdapter(clientList);
+        results = realm.where(Client.class).findAll();
 
-        interpolateRecycleView();
+//        interpolateRecycleView();
 
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
-        recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(mAdapter);
+
+
+        clientsAdapter = new ClientsAdapter(this,results,realm);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        recyclerView.setAdapter(clientsAdapter);
+
+
+//        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+//        recyclerView.setLayoutManager(mLayoutManager);
+//        recyclerView.setItemAnimator(new DefaultItemAnimator());
+//        recyclerView.setAdapter(mAdapter);
     }
 
     private void interpolateRecycleView() {

@@ -49,4 +49,7 @@ dependencies {
     //QR
     //reader
     implementation 'com.budiyev.android:code-scanner:2.0.1'
+
+    compile 'io.realm:android-adapters:1.4.0'
+
 }
