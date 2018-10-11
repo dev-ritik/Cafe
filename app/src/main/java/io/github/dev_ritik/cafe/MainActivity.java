@@ -245,28 +245,48 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void checkIn(View view) {
-        if (data != null && data[0] != null) {
-            Log.i("point m247", Arrays.toString(data));
-            realmAddition(data[0], data[1], data[2]);
+        Log.i("point m247", Arrays.toString(data));
+        if (data != null && data.length == 3 && data[0] != null && data[1] != null && data[2] != null) {
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    RealmResults<Client> clients = realm.where(Client.class).equalTo("id", data[0]).findAll();
+                    Log.i("point m253", clients + "" + data[0]);
+                    if (clients == null || clients.size() == 0) {
+                        realmAddition(data[0], data[1], data[2]);
+                        Toast.makeText(MainActivity.this, "added", Toast.LENGTH_SHORT).show();
+                    } else if (clients.get(clients.size() - 1).getCheckOutTime() != null) {
+                        realmAddition(data[0], data[1], data[2]);
+                        Toast.makeText(MainActivity.this, "added", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(MainActivity.this, "Already checked in", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
         } else
             Toast.makeText(this, "no data found", Toast.LENGTH_SHORT).show();
     }
 
     public void checkOut(View view) {
-        if (data != null && data[0] != null) {
+        if (data != null && data.length == 3 && data[0] != null && data[1] != null && data[2] != null) {
             realm.executeTransaction(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
-                    Client client = realm.where(Client.class).equalTo("id", data[0]).findFirst();
-                    Log.i("point m261", client + "" + data[0]);
-                    if (client == null) {
-                        Toast.makeText(MainActivity.this, "new user!!", Toast.LENGTH_SHORT).show();
+                    RealmResults<Client> clients = realm.where(Client.class).equalTo("id", data[0]).findAll();
+                    Log.i("point m261", clients + "" + data[0]);
+                    if (clients == null || clients.size() == 0) {
+                        Toast.makeText(MainActivity.this, "new user!! Please checkin", Toast.LENGTH_SHORT).show();
+                    } else if (clients.get(clients.size() - 1).getCheckOutTime() == null) {
+                        Toast.makeText(MainActivity.this, "Checked-out", Toast.LENGTH_SHORT).show();
+                        clients.get(clients.size() - 1).setCheckOutTime(data[2]);
                     } else {
-                        client.setCheckOutTime(data[2]);
+                        Toast.makeText(MainActivity.this, "Already checked out!!", Toast.LENGTH_SHORT).show();
                     }
                 }
             });
-        }
+        } else
+            Toast.makeText(this, "no data found", Toast.LENGTH_SHORT).show();
     }
 
     public void clients(View view) {
