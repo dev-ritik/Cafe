@@ -41,10 +41,10 @@ public class AccountActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
 
-        profilePic = (ImageView) findViewById(R.id.profile_image);
-        id = (TextView) findViewById(R.id.id);
-        infoLabel = (TextView) findViewById(R.id.info_label);
-        info = (TextView) findViewById(R.id.info);
+        profilePic = findViewById(R.id.profile_image);
+        id = findViewById(R.id.id);
+        infoLabel = findViewById(R.id.info_label);
+        info = findViewById(R.id.info);
 
         // register a receiver for the onCurrentProfileChanged event
         profileTracker = new ProfileTracker() {

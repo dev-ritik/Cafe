@@ -1,8 +1,6 @@
 package io.github.dev_ritik.cafe;
 
 public class ClientJson {
-    private String name;
-
     private String checkInTime;
 
     private String checkOutTime;
@@ -13,18 +11,9 @@ public class ClientJson {
     public ClientJson() {
     }
 
-    public ClientJson(String name, String checkInTime, String checkOutTime) {
-        this.name = name;
+    public ClientJson(String checkInTime, String checkOutTime) {
         this.checkInTime = checkInTime;
         this.checkOutTime = checkOutTime;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getCheckInTime() {

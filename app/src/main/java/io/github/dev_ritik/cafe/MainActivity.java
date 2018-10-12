@@ -45,7 +45,6 @@ import io.realm.RealmResults;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static int ACCOUNT_ACTIVITY_REQUEST_CODE = 1;
     public DatabaseReference mDatabaseReference;
     ProfileTracker profileTracker;
     ImageView accountButton;
@@ -53,8 +52,8 @@ public class MainActivity extends AppCompatActivity {
     String userName;
     Realm realm;
     String[] data;
-    private CodeScanner mCodeScanner;
     FirebaseDatabase mfirebaseDatabase;
+    private CodeScanner mCodeScanner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         mDatabaseReference = mfirebaseDatabase.getReference().child("transactions");
 
 
-        accountButton = (ImageView) findViewById(R.id.account_button);
+        accountButton = findViewById(R.id.account_button);
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 50);
@@ -91,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
             accountButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     Intent intent = new Intent(MainActivity.this, AccountActivity.class);
-                    startActivityForResult(intent, ACCOUNT_ACTIVITY_REQUEST_CODE);
+                    startActivity(intent);
                 }
             });
 
@@ -205,20 +204,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
-    @Override
-    protected void onActivityResult(final int requestCode, final int resultCode,
-                                    final Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == ACCOUNT_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
-            // if the user logged out in AccountActivity, show the login screen
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-            finish();
-        }
-    }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -265,7 +250,7 @@ public class MainActivity extends AppCompatActivity {
                     if (clients == null || clients.size() == 0) {
 
                         realmAddition(data[0], data[1], data[2]);
-                        pushToDatabase(data[0], new ClientJson(data[1], data[2], null));
+                        pushToDatabase(data[0], new ClientJson(data[2], null));
                         Toast.makeText(MainActivity.this, "added", Toast.LENGTH_SHORT).show();
                         data = null;
                         mCodeScanner.startPreview();
@@ -273,7 +258,7 @@ public class MainActivity extends AppCompatActivity {
                     } else if (clients.get(clients.size() - 1).getCheckOutTime() != null) {
 
                         realmAddition(data[0], data[1], data[2]);
-                        pushToDatabase(data[0], new ClientJson(data[1], data[2], null));
+                        pushToDatabase(data[0], new ClientJson(data[2], null));
                         Toast.makeText(MainActivity.this, "added", Toast.LENGTH_SHORT).show();
                         data = null;
                         mCodeScanner.startPreview();
@@ -298,7 +283,7 @@ public class MainActivity extends AppCompatActivity {
         Query query = mDatabaseReference.child(id).orderByChild("checkOutTime").equalTo(null);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 //                Log.i("point ma300", dataSnapshot.getValue().toString());
 //                Log.i("point ma301", dataSnapshot.getKey().toString());
                 ClientJson clientJson;

@@ -18,19 +18,4 @@
     <color name="ak_statusBar">#00c5a5</color>
     <color name="ak_icon">#09d4b6</color>
 
-    <color name="searchLabel">#c1cdd8</color>
-    <color name="searchText">#666666</color>
-    <color name="destBackground">#edf2f6</color>
-    <color name="destTitle">#607180</color>
-    <color name="destText">#7d97ad</color>
-    <color name="wavesGood">#09d4b5</color>
-    <color name="wavesFair">#ffa234</color>
-    <color name="wavesPoor">#fc6240</color>
-
-    <color name="friendText">#61727f</color>
-    <color name="followButtonBackground">#09d4b6</color>
-    <color name="followButtonPressedBackground">#00c5a5</color>
-    <color name="unfollowButtonBackground">#7d97ad</color>
-    <color name="unfollowButtonPressedBackground">#8baac4</color>
-
 </resources>

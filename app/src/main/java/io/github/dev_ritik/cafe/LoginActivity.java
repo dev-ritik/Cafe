@@ -41,8 +41,8 @@ public class LoginActivity extends AppCompatActivity {
 
         logger = AppEventsLogger.newLogger(this);
 
-        loginText = (EditText) findViewById(R.id.login_text);
-        accountkitButton = (Button) findViewById(R.id.accountkit_button);
+        loginText = findViewById(R.id.login_text);
+        accountkitButton = findViewById(R.id.accountkit_button);
         accountkitButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 String login = loginText.getText().toString();

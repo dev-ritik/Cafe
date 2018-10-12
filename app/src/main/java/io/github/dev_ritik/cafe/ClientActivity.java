@@ -10,8 +10,6 @@ import android.util.Log;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.ArrayList;
-
 import io.realm.Realm;
 import io.realm.RealmResults;
 
@@ -19,11 +17,8 @@ public class ClientActivity extends AppCompatActivity {
     public DatabaseReference mDatabaseReference;
     Realm realm;
     RealmResults<Client> results;
-    FirebaseDatabase mfirebaseDatabase;
-    private ArrayList<Client> clientList = new ArrayList<>();
-    private RecyclerView recyclerView;
-    private ClientsAdapter mAdapter;
-    private ClientsAdapter clientsAdapter;
+//    private ArrayList<Client> clientList = new ArrayList<>();
+//    private ClientsAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,16 +27,15 @@ public class ClientActivity extends AppCompatActivity {
 //        Log.i("point ca27", "on create");
 
         realm = Realm.getDefaultInstance();
-        mfirebaseDatabase = FirebaseDatabase.getInstance();
-        mDatabaseReference = mfirebaseDatabase.getReference().child("transactions");
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference().child("transactions");
+        RecyclerView recyclerView = findViewById(R.id.recycler_view);
 //        mAdapter = new ClientsAdapter(clientList);
         results = realm.where(Client.class).findAll();
 
 //        interpolateRecycleView();
 
 
-        clientsAdapter = new ClientsAdapter(this, results, realm,mDatabaseReference);
+        ClientsAdapter clientsAdapter = new ClientsAdapter(this, results, realm, mDatabaseReference);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(clientsAdapter);

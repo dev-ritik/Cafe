@@ -83,10 +83,10 @@ import io.realm.RealmRecyclerViewAdapter;
 public class ClientsAdapter
         extends RealmRecyclerViewAdapter<Client, ClientsAdapter.ClientViewHolder> {
 
-    Realm realm1;
-    DatabaseReference root;
+    private Realm realm1;
+    private DatabaseReference root;
 
-    public ClientsAdapter(Context context, OrderedRealmCollection<Client> clientList, Realm realm, DatabaseReference root) {
+    ClientsAdapter(Context context, OrderedRealmCollection<Client> clientList, Realm realm, DatabaseReference root) {
         super(context, clientList, true);
         realm1 = Realm.getDefaultInstance();
         this.root = root;
@@ -102,8 +102,7 @@ public class ClientsAdapter
 
         }
         Log.i("point 98", "done");
-        ClientViewHolder clientViewHolder = (ClientViewHolder) holder;
-        clientViewHolder.loadItem(client);
+        holder.loadItem(client);
     }
 
     @NonNull
@@ -149,7 +148,7 @@ public class ClientsAdapter
         Query query = root.child(id).orderByChild("checkInTime").equalTo(checkInTime);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     if (snapshot != null && snapshot.getKey() != null) {
                         root.child(id).child(snapshot.getKey()).setValue(null);
@@ -172,10 +171,10 @@ public class ClientsAdapter
 
         ClientViewHolder(View view) {
             super(view);
-            userId = (TextView) view.findViewById(R.id.userId);
-            userName = (TextView) view.findViewById(R.id.userName);
-            checkInTime = (TextView) view.findViewById(R.id.checkInTime);
-            checkOutTime = (TextView) view.findViewById(R.id.checkOutTime);
+            userId = view.findViewById(R.id.userId);
+            userName =  view.findViewById(R.id.userName);
+            checkInTime = view.findViewById(R.id.checkInTime);
+            checkOutTime = view.findViewById(R.id.checkOutTime);
             delete = view.findViewById(R.id.delete);
 
 
