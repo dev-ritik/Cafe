@@ -29,11 +29,11 @@ import androidmads.library.qrgenearator.QRGEncoder;
 
 public class MainActivity extends AppCompatActivity {
 
+    public String userId = null;
     ProfileTracker profileTracker;
     ImageView accountButton;
     ImageView qrImage;
     String userName = "not provided";
-    public String userId = null;
     TextView qrCode;
     LinearLayout codeLayout;
 
@@ -56,7 +56,11 @@ public class MainActivity extends AppCompatActivity {
         // set click listener on account button
         accountButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, AccountActivity.class).putExtra("id",userId));
+                if (userId == null) {
+                    Toast.makeText(MainActivity.this, "Fetching data, Please Wait", Toast.LENGTH_SHORT).show();
+                    fetchProfile();
+                } else
+                    startActivity(new Intent(MainActivity.this, AccountActivity.class).putExtra("id", userId));
             }
         });
 
@@ -71,19 +75,29 @@ public class MainActivity extends AppCompatActivity {
         };
 
 
+        fetchProfile();
+    }
+
+    private void fetchProfile() {
+
         if (AccessToken.getCurrentAccessToken() != null) {
             // If there is an access token then Login Button was used
             // Check if the profile has already been fetched
             Profile currentProfile = Profile.getCurrentProfile();
+            Log.i("point ma81", "profile login " + currentProfile);
             if (currentProfile != null) {
+                Log.i("point ma83", "profile login");
                 displayProfilePic(currentProfile);
                 this.userId = currentProfile.getId();
                 this.userName = currentProfile.getFirstName() + " " + currentProfile.getMiddleName() + " " + currentProfile.getLastName();
             } else {
+                Log.i("point ma88", "profile login");
                 // Fetch the profile, which will trigger the onCurrentProfileChanged receiver
                 Profile.fetchProfileForCurrentAccessToken();
+                Log.i("point ma93", "profile fetch" + userId + " " + currentProfile);
             }
         } else {
+            Log.i("point ma89", "accountkit login");
             // Otherwise, get Account Kit login information
             AccountKit.getCurrentAccount(new AccountKitCallback<Account>() {
                 @Override

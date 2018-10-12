@@ -63,8 +63,8 @@ public class AccountActivity extends AppCompatActivity {
         String userId = intent.getExtras().getString("id");
         if (userId == null) {
             Toast.makeText(this, "some error occurred", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, MainActivity.class));
         }
-        Log.i("point aa67", userId);
         mDatabaseReference = FirebaseDatabase.getInstance().getReference().child("transactions").child(userId);
 
         profilePic = findViewById(R.id.profile_image);
