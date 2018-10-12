@@ -29,12 +29,11 @@ import androidmads.library.qrgenearator.QRGEncoder;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static int ACCOUNT_ACTIVITY_REQUEST_CODE = 1;
     ProfileTracker profileTracker;
     ImageView accountButton;
     ImageView qrImage;
     String userName = "not provided";
-    String userId = null;
+    public String userId = null;
     TextView qrCode;
     LinearLayout codeLayout;
 
@@ -42,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Log.i("point ca6", "oncreare");
+        Log.i("point ma6", "oncreare");
 
         Toolbar toolbar = findViewById(R.id.toolbar);
 
@@ -57,8 +56,7 @@ public class MainActivity extends AppCompatActivity {
         // set click listener on account button
         accountButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, AccountActivity.class);
-                startActivityForResult(intent, ACCOUNT_ACTIVITY_REQUEST_CODE);
+                startActivity(new Intent(MainActivity.this, AccountActivity.class).putExtra("id",userId));
             }
         });
 
@@ -130,19 +128,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "something went wrong generating QR code", Toast.LENGTH_SHORT).show();
             qrCode.setText(message);
             qrCode.setVisibility(View.VISIBLE);
-        }
-    }
-
-    @Override
-    protected void onActivityResult(final int requestCode, final int resultCode,
-                                    final Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == ACCOUNT_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
-            // if the user logged out in AccountActivity, show the login screen
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-            finish();
         }
     }
 
