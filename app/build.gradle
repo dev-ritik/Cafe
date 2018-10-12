@@ -50,6 +50,11 @@ dependencies {
     //reader
     implementation 'com.budiyev.android:code-scanner:2.0.1'
 
-    compile 'io.realm:android-adapters:1.4.0'
+    //Realm database
+    implementation 'io.realm:android-adapters:1.4.0'
+
+    //Firebase
+    implementation 'com.google.firebase:firebase-database:16.0.3'
 
 }
+apply plugin: 'com.google.gms.google-services'

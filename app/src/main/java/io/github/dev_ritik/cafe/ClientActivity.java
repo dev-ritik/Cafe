@@ -2,10 +2,13 @@ package io.github.dev_ritik.cafe;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
@@ -13,23 +16,24 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 public class ClientActivity extends AppCompatActivity {
+    public DatabaseReference mDatabaseReference;
     Realm realm;
-
+    RealmResults<Client> results;
+    FirebaseDatabase mfirebaseDatabase;
     private ArrayList<Client> clientList = new ArrayList<>();
     private RecyclerView recyclerView;
     private ClientsAdapter mAdapter;
-
     private ClientsAdapter clientsAdapter;
-    RealmResults<Client> results;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_client);
+//        Log.i("point ca27", "on create");
 
         realm = Realm.getDefaultInstance();
-
+        mfirebaseDatabase = FirebaseDatabase.getInstance();
+        mDatabaseReference = mfirebaseDatabase.getReference().child("transactions");
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 //        mAdapter = new ClientsAdapter(clientList);
         results = realm.where(Client.class).findAll();
@@ -37,34 +41,17 @@ public class ClientActivity extends AppCompatActivity {
 //        interpolateRecycleView();
 
 
-
-        clientsAdapter = new ClientsAdapter(this,results,realm);
+        clientsAdapter = new ClientsAdapter(this, results, realm,mDatabaseReference);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(clientsAdapter);
+        recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
 
 
 //        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
 //        recyclerView.setLayoutManager(mLayoutManager);
 //        recyclerView.setItemAnimator(new DefaultItemAnimator());
 //        recyclerView.setAdapter(mAdapter);
-    }
-
-    private void interpolateRecycleView() {
-        RealmResults<Client> clients = realm.where(Client.class).findAll();
-
-        // Use an iterator to add all
-        realm.beginTransaction();
-        Log.i("point ca45", clients.size() + "");
-
-        for (Client client : clients) {
-            Log.i("point ca455", "here" + client);
-            clientList.add(client);
-            Log.i("point ca51", clientList.size() + "");
-            mAdapter.notifyDataSetChanged();
-        }
-
-        realm.commitTransaction();
     }
 
     @Override

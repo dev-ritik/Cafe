@@ -25,12 +25,20 @@ import com.facebook.accountkit.Account;
 import com.facebook.accountkit.AccountKit;
 import com.facebook.accountkit.AccountKitCallback;
 import com.facebook.accountkit.AccountKitError;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.zxing.Result;
 import com.makeramen.roundedimageview.RoundedTransformationBuilder;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -38,6 +46,7 @@ import io.realm.RealmResults;
 public class MainActivity extends AppCompatActivity {
 
     public static int ACCOUNT_ACTIVITY_REQUEST_CODE = 1;
+    public DatabaseReference mDatabaseReference;
     ProfileTracker profileTracker;
     ImageView accountButton;
     String userId;
@@ -45,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     Realm realm;
     String[] data;
     private CodeScanner mCodeScanner;
+    FirebaseDatabase mfirebaseDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +75,10 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, client.getId(), Toast.LENGTH_SHORT).show();
             Toast.makeText(this, client.getId(), Toast.LENGTH_SHORT).show();
         }
+
+
+        mfirebaseDatabase = FirebaseDatabase.getInstance();
+        mDatabaseReference = mfirebaseDatabase.getReference().child("transactions");
 
 
         accountButton = (ImageView) findViewById(R.id.account_button);
@@ -239,11 +253,6 @@ public class MainActivity extends AppCompatActivity {
                 .into(accountButton);
     }
 
-    public String calculateTime() {
-        return android.text.format.DateFormat.format("MMM dd, yyyy hh:mm:ss aaa", new java.util.Date()).toString();
-
-    }
-
     public void checkIn(View view) {
         Log.i("point m247", Arrays.toString(data));
         if (data != null && data.length == 3 && data[0] != null && data[1] != null && data[2] != null) {
@@ -252,14 +261,27 @@ public class MainActivity extends AppCompatActivity {
                 public void execute(Realm realm) {
                     RealmResults<Client> clients = realm.where(Client.class).equalTo("id", data[0]).findAll();
                     Log.i("point m253", clients + "" + data[0]);
+
                     if (clients == null || clients.size() == 0) {
+
                         realmAddition(data[0], data[1], data[2]);
+                        pushToDatabase(data[0], new ClientJson(data[1], data[2], null));
                         Toast.makeText(MainActivity.this, "added", Toast.LENGTH_SHORT).show();
+                        data = null;
+                        mCodeScanner.startPreview();
+
                     } else if (clients.get(clients.size() - 1).getCheckOutTime() != null) {
+
                         realmAddition(data[0], data[1], data[2]);
+                        pushToDatabase(data[0], new ClientJson(data[1], data[2], null));
                         Toast.makeText(MainActivity.this, "added", Toast.LENGTH_SHORT).show();
+                        data = null;
+                        mCodeScanner.startPreview();
+
                     } else {
+
                         Toast.makeText(MainActivity.this, "Already checked in", Toast.LENGTH_SHORT).show();
+
                     }
                 }
             });
@@ -268,6 +290,40 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "no data found", Toast.LENGTH_SHORT).show();
     }
 
+    private void pushToDatabase(String id, ClientJson client) {
+        mDatabaseReference.child(id).push().setValue(client);
+    }
+
+    private void updateFirebase(final String id, final String checkoutTime) {
+        Query query = mDatabaseReference.child(id).orderByChild("checkOutTime").equalTo(null);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+//                Log.i("point ma300", dataSnapshot.getValue().toString());
+//                Log.i("point ma301", dataSnapshot.getKey().toString());
+                ClientJson clientJson;
+                Map<String, Object> clientMap = new HashMap<>();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    clientJson = snapshot.getValue(ClientJson.class);
+                    if (clientJson != null) {
+                        clientJson.setCheckOutTime(checkoutTime);
+                        clientMap.put(snapshot.getKey(), clientJson);
+                        Log.i("point ma311", clientJson.getCheckInTime());
+                        mDatabaseReference.child(id).updateChildren(clientMap);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(MainActivity.this, "Failed to upload", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+    }
+
+
     public void checkOut(View view) {
         if (data != null && data.length == 3 && data[0] != null && data[1] != null && data[2] != null) {
             realm.executeTransaction(new Realm.Transaction() {
@@ -275,11 +331,19 @@ public class MainActivity extends AppCompatActivity {
                 public void execute(Realm realm) {
                     RealmResults<Client> clients = realm.where(Client.class).equalTo("id", data[0]).findAll();
                     Log.i("point m261", clients + "" + data[0]);
+
                     if (clients == null || clients.size() == 0) {
-                        Toast.makeText(MainActivity.this, "new user!! Please checkin", Toast.LENGTH_SHORT).show();
+
+                        Toast.makeText(MainActivity.this, "new user!! Please check-in", Toast.LENGTH_SHORT).show();
+
                     } else if (clients.get(clients.size() - 1).getCheckOutTime() == null) {
+
                         Toast.makeText(MainActivity.this, "Checked-out", Toast.LENGTH_SHORT).show();
                         clients.get(clients.size() - 1).setCheckOutTime(data[2]);
+                        updateFirebase(data[0], data[2]);
+                        data = null;
+                        mCodeScanner.startPreview();
+
                     } else {
                         Toast.makeText(MainActivity.this, "Already checked out!!", Toast.LENGTH_SHORT).show();
                     }
